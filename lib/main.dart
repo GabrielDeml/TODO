@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -63,12 +64,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    CalendarFormat _calendarFormat = CalendarFormat.month;
+    DateTime _focusedDay = DateTime.now();
+    DateTime? _selectedDay;
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -78,31 +76,40 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Some text',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+        child: TableCalendar(
+          firstDay: DateTime.now(),
+          lastDay: DateTime.now(),
+          focusedDay: _focusedDay,
+          calendarFormat: _calendarFormat,
+          selectedDayPredicate: (day) {
+            // Use `selectedDayPredicate` to determine which day is currently selected.
+            // If this returns true, then `day` will be marked as selected.
+
+            // Using `isSameDay` is recommended to disregard
+            // the time-part of compared DateTime objects.
+            return isSameDay(_selectedDay, day);
+          },
+          onDaySelected: (selectedDay, focusedDay) {
+            if (!isSameDay(_selectedDay, selectedDay)) {
+              // Call `setState()` when updating the selected day
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+            }
+          },
+          onFormatChanged: (format) {
+            if (_calendarFormat != format) {
+              // Call `setState()` when updating calendar format
+              setState(() {
+                _calendarFormat = format;
+              });
+            }
+          },
+          onPageChanged: (focusedDay) {
+            // No need to call `setState()` here
+            _focusedDay = focusedDay;
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -114,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         tooltip: 'Add event',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
@@ -147,9 +154,6 @@ class _SecondRoute extends State<SecondRoute> {
     if (pickedDate != null && pickedDate != currentDate) {
       setState(() {
         currentDate = pickedDate;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(currentDate.toString())),
-        );
       });
     }
   }
@@ -157,29 +161,28 @@ class _SecondRoute extends State<SecondRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Second Route"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Go back!'),
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                },
-                child: const Text("show snack bar")),
-            ElevatedButton(
-              onPressed: () => _selectDate(context),
-              child: const Text('Select date'),
-            ),
-          ],
+        appBar: AppBar(
+          title: const Text("Create Project"),
         ),
-      ),
-    );
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text('Go back!'),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  },
+                  child: const Text("show snack bar")),
+              ElevatedButton(
+                onPressed: () => _selectDate(context),
+                child: const Text('Select date'),
+              ),
+            ],
+          ),
+        ));
   }
 }
