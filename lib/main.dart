@@ -59,20 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter += 2;
     });
-
-    DateTime currentDate = DateTime.now();
-    Future<void> _selectDate(BuildContext context) async {
-      final DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: currentDate,
-          firstDate: DateTime(2015),
-          lastDate: DateTime(2050));
-      if (pickedDate != null && pickedDate != currentDate) {
-        setState(() {
-          currentDate = pickedDate;
-        });
-      }
-    }
   }
 
   @override
@@ -133,9 +119,36 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class SecondRoute extends StatelessWidget {
+class SecondRoute extends StatefulWidget {
   const SecondRoute({Key? key}) : super(key: key);
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+  @override
+  State<SecondRoute> createState() => _SecondRoute();
+}
+class _SecondRoute extends State<SecondRoute> {
   static const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+
+  DateTime currentDate = DateTime.now();
+    Future<void> _selectDate(BuildContext context) async {
+      final DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: currentDate,
+          firstDate: DateTime(2015),
+          lastDate: DateTime(2050));
+      if (pickedDate != null && pickedDate != currentDate) {
+        setState(() {
+          currentDate = pickedDate;
+        });
+      }
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +171,7 @@ class SecondRoute extends StatelessWidget {
                   child: const Text("show snack bar")),
               ElevatedButton(
                 onPressed: () => _selectDate(context),
-                child: Text('Select date'),
+                child: const Text('Select date'),
               ),
             ],
           ),
