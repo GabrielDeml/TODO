@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -57,8 +57,22 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
+      _counter += 2;
     });
+
+    DateTime currentDate = DateTime.now();
+    Future<void> _selectDate(BuildContext context) async {
+      final DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: currentDate,
+          firstDate: DateTime(2015),
+          lastDate: DateTime(2050));
+      if (pickedDate != null && pickedDate != currentDate) {
+        setState(() {
+          currentDate = pickedDate;
+        });
+      }
+    }
   }
 
   @override
@@ -96,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'HI',
+              'Some text',
             ),
             Text(
               '$_counter',
@@ -106,10 +120,48 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SecondRoute()),
+          );
+        },
+        tooltip: 'Add event',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+class SecondRoute extends StatelessWidget {
+  const SecondRoute({Key? key}) : super(key: key);
+  static const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Second Route"),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text('Go back!'),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  },
+                  child: const Text("show snack bar")),
+              ElevatedButton(
+                onPressed: () => _selectDate(context),
+                child: Text('Select date'),
+              ),
+            ],
+          ),
+        ));
   }
 }
