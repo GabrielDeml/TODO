@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // in the middle of the parent.
         child: TableCalendar(
           firstDay: DateTime.now(),
-          lastDay: DateTime.now(),
+          lastDay: DateTime.now().add(const Duration(days: 365)),
           focusedDay: _focusedDay,
           calendarFormat: _calendarFormat,
           selectedDayPredicate: (day) {
