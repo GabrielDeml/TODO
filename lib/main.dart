@@ -133,48 +133,53 @@ class SecondRoute extends StatefulWidget {
   @override
   State<SecondRoute> createState() => _SecondRoute();
 }
+
 class _SecondRoute extends State<SecondRoute> {
   static const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
 
   DateTime currentDate = DateTime.now();
-    Future<void> _selectDate(BuildContext context) async {
-      final DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: currentDate,
-          firstDate: DateTime(2015),
-          lastDate: DateTime(2050));
-      if (pickedDate != null && pickedDate != currentDate) {
-        setState(() {
-          currentDate = pickedDate;
-        });
-      }
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: currentDate,
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2050));
+    if (pickedDate != null && pickedDate != currentDate) {
+      setState(() {
+        currentDate = pickedDate;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(currentDate.toString())),
+        );
+      });
     }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Second Route"),
+      appBar: AppBar(
+        title: const Text("Second Route"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text('Go back!'),
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                },
+                child: const Text("show snack bar")),
+            ElevatedButton(
+              onPressed: () => _selectDate(context),
+              child: const Text('Select date'),
+            ),
+          ],
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Go back!'),
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  },
-                  child: const Text("show snack bar")),
-              ElevatedButton(
-                onPressed: () => _selectDate(context),
-                child: const Text('Select date'),
-              ),
-            ],
-          ),
-        ));
+      ),
+    );
   }
 }
