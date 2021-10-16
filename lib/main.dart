@@ -62,7 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
   }
@@ -141,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
             rangeSelectionMode: _rangeSelectionMode,
             eventLoader: _getEventsForDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
-            calendarStyle: CalendarStyle(
+            calendarStyle: const CalendarStyle(
               // Use `CalendarStyle` to customize the UI
               outsideDaysVisible: false,
             ),
@@ -176,7 +175,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
-                        onTap: () => print('${value[index]}'),
+                        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('${value[index]}'))),
                         title: Text('${value[index]}'),
                       ),
                     );
