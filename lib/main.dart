@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:todo/firestore.dart';
 import 'utils.dart';
+import 'package:date_time_picker/date_time_picker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -222,26 +222,26 @@ class SecondRoute extends StatefulWidget {
 }
 
 class _SecondRoute extends State<SecondRoute> {
-  static const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+  // Controller for the input fields
   TextEditingController textController = TextEditingController();
   TextEditingController textControllerNumber = TextEditingController(text: '1');
-  String displayText = "";
-  DateTime currentDate = DateTime.now();
+  // Set the initial date
+  String currentDate = DateTime.now().toString();
+  // Init fireflutter
+  final AddProject _addProject = AddProject();
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: currentDate,
-        firstDate: DateTime(2015),
-        lastDate: DateTime(2050));
-    if (pickedDate != null && pickedDate != currentDate) {
-      setState(() {
-        currentDate = pickedDate;
-      });
-    }
-  }
-
-  AddProject _addProject = AddProject();
+  // Future<void> _selectDate(BuildContext context) async {
+  //   final DateTime? pickedDate = await showDatePicker(
+  //       context: context,
+  //       initialDate: currentDate,
+  //       firstDate: DateTime(2015),
+  //       lastDate: DateTime(2050));
+  //   if (pickedDate != null && pickedDate != currentDate) {
+  //     setState(() {
+  //       currentDate = pickedDate;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -262,10 +262,10 @@ class _SecondRoute extends State<SecondRoute> {
               ),
               controller: textController,
             ),
-            TextButton(
-              onPressed: () => _selectDate(context),
-              child: const Text('Select date'),
-            ),
+            // TextButton(
+            //   onPressed: () => _selectDate(context),
+            //   child: const Text('Select date'),
+            // ),
             TextFormField(
                 controller: textControllerNumber,
                 keyboardType: TextInputType.number,
@@ -276,7 +276,18 @@ class _SecondRoute extends State<SecondRoute> {
                     labelText: "Expected Hours",
                     hintText: "Hours",
                     icon: Icon(Icons.timer))),
-            // )
+            DateTimePicker(
+              type: DateTimePickerType.dateTimeSeparate,
+              dateMask: 'd MMM, yyyy',
+              initialValue: DateTime.now().toString(),
+              firstDate: DateTime.now(),
+              lastDate: DateTime.now().add(const Duration(days: 3650)),
+              icon: const Icon(Icons.event),
+              dateLabelText: 'Date',
+              timeLabelText: "Hour",
+              onChanged: (val) => {currentDate = val},
+              onSaved: (val) => {currentDate = val!},
+            )
           ],
         ),
       ),
@@ -284,6 +295,14 @@ class _SecondRoute extends State<SecondRoute> {
         onPressed: () {
           _addProject.addProject(textController.text, currentDate,
               int.parse(textControllerNumber.text));
+          // Show snack bar
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Project Added'),
+            ),
+          );
+          // Go back
+          Navigator.pop(context);
         },
         tooltip: 'Save Project',
         child: const Icon(Icons.save),
