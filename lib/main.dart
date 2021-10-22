@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -198,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
             MaterialPageRoute(builder: (context) => const SecondRoute()),
           );
         },
-        tooltip: 'Add event',
+        tooltip: 'Add Project',
         child: const Icon(Icons.add),
       ),
     );
@@ -240,54 +241,53 @@ class _SecondRoute extends State<SecondRoute> {
     }
   }
 
+  AddProject _addProject = AddProject();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Create Project"),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
+      appBar: AppBar(
+        title: const Text("Create Project"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextFormField(
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Project Name',
+                hintText: 'Enter the name of the Project',
+                icon: Icon(Icons.event),
+              ),
+              controller: textController,
+            ),
+            TextButton(
+              onPressed: () => _selectDate(context),
+              child: const Text('Select date'),
+            ),
+            TextFormField(
+                controller: textControllerNumber,
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                ],
                 decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Event Name',
-                  hintText: 'Enter the name of the event',
-                  icon: Icon(Icons.event),
-                ),
-                controller: textController,
-              ),
-              TextButton(
-                onPressed: () => _selectDate(context),
-                child: const Text('Select date'),
-              ),
-              TextFormField(
-                  controller: textControllerNumber,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                  ],
-                  decoration: const InputDecoration(
-                      labelText: "Expected Hours",
-                      hintText: "Hours",
-                      icon: Icon(Icons.timer))),
-              AddUser(textController.text, currentDate,
-                  int.parse(textControllerNumber.text)),
-              // ElevatedButton(
-              //     onPressed: () {
-              //       setState(() {
-              //         displayText = textController.text;
-              //       });
-              //     },
-              //     child: const Text("Show Text")),
-              // Text(
-              //   displayText,
-              //   style: const TextStyle(fontSize: 20),
-              // )
-            ],
-          ),
-        ));
+                    labelText: "Expected Hours",
+                    hintText: "Hours",
+                    icon: Icon(Icons.timer))),
+            // )
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _addProject.addProject(textController.text, currentDate,
+              int.parse(textControllerNumber.text));
+        },
+        tooltip: 'Save Project',
+        child: const Icon(Icons.save),
+      ),
+    );
   }
 }
