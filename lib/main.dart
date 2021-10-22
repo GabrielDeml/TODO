@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:todo/firestore.dart';
+import 'package:todo/sign_in.dart';
 import 'utils.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 
@@ -57,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
+      final SignIn _signIn = SignIn();
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   DateTime? _rangeStart;
@@ -122,6 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
             calendarFormat: _calendarFormat,
             rangeSelectionMode: _rangeSelectionMode,
             eventLoader: _getEventsForDay,
-            startingDayOfWeek: StartingDayOfWeek.monday,
+            startingDayOfWeek: StartingDayOfWeek.sunday,
             calendarStyle: const CalendarStyle(
               // Use `CalendarStyle` to customize the UI
               outsideDaysVisible: false,
@@ -190,6 +194,9 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
           ),
+          TextButton(
+              onPressed: _signIn.signInWithGoogle,
+              child: const Text("Sign in with google"))
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -230,19 +237,6 @@ class _SecondRoute extends State<SecondRoute> {
   // Init fireflutter
   final AddProject _addProject = AddProject();
 
-  // Future<void> _selectDate(BuildContext context) async {
-  //   final DateTime? pickedDate = await showDatePicker(
-  //       context: context,
-  //       initialDate: currentDate,
-  //       firstDate: DateTime(2015),
-  //       lastDate: DateTime(2050));
-  //   if (pickedDate != null && pickedDate != currentDate) {
-  //     setState(() {
-  //       currentDate = pickedDate;
-  //     });
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -262,20 +256,18 @@ class _SecondRoute extends State<SecondRoute> {
               ),
               controller: textController,
             ),
-            // TextButton(
-            //   onPressed: () => _selectDate(context),
-            //   child: const Text('Select date'),
-            // ),
             TextFormField(
-                controller: textControllerNumber,
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                ],
-                decoration: const InputDecoration(
-                    labelText: "Expected Hours",
-                    hintText: "Hours",
-                    icon: Icon(Icons.timer))),
+              controller: textControllerNumber,
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+              ],
+              decoration: const InputDecoration(
+                labelText: "Expected Hours",
+                hintText: "Hours",
+                icon: Icon(Icons.timer),
+              ),
+            ),
             DateTimePicker(
               type: DateTimePickerType.dateTimeSeparate,
               dateMask: 'd MMM, yyyy',
@@ -293,6 +285,7 @@ class _SecondRoute extends State<SecondRoute> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          // Save project to firebase
           _addProject.addProject(textController.text, currentDate,
               int.parse(textControllerNumber.text));
           // Show snack bar
