@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:todo/firestore.dart';
 import 'utils.dart';
 
 void main() {
@@ -245,19 +246,11 @@ class _SecondRoute extends State<SecondRoute> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Go back!'),
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  },
-                  child: const Text("show snack bar")),
-              ElevatedButton(
+              TextButton(
                 onPressed: () => _selectDate(context),
                 child: const Text('Select date'),
               ),
+              const AddUser("fullName", "company", 42)
             ],
           ),
         ));
