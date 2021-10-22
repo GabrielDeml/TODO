@@ -5,11 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddUser extends StatelessWidget {
-  final String fullName;
-  final String company;
-  final int age;
+  final String name;
+  final DateTime date;
+  final int hours;
 
-  const AddUser(this.fullName, this.company, this.age, {Key? key}) : super(key: key);
+  const AddUser(this.name, this.date, this.hours, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +18,11 @@ class AddUser extends StatelessWidget {
 
     Future<void> addUser() {
       // Call the user's CollectionReference to add a new user
-      return users
-          .add({
-            'full_name': fullName, // John Doe
-            'company': company, // Stokes and Sons
-            'age': age // 42
-          })
-          .then((value) => print("User Added"))
-          .catchError((error) => print("Failed to add user: $error"));
+      return users.add({
+        'name': name,
+        'date': date,
+        'age': hours
+      });
     }
 
     return TextButton(

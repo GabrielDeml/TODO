@@ -221,8 +221,10 @@ class SecondRoute extends StatefulWidget {
 
 class _SecondRoute extends State<SecondRoute> {
   static const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
-
+  TextEditingController textController = TextEditingController();
+  String displayText = "";
   DateTime currentDate = DateTime.now();
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
         context: context,
@@ -246,11 +248,29 @@ class _SecondRoute extends State<SecondRoute> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              TextFormField(
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'Enter your username',
+                ),
+                controller: textController,
+              ),
               TextButton(
                 onPressed: () => _selectDate(context),
                 child: const Text('Select date'),
               ),
-              const AddUser("fullName", "company", 42)
+              AddUser("fullName", DateTime.now(), 42),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      displayText = textController.text;
+                    });
+                  },
+                  child: const Text("Show Text")),
+              Text(
+                displayText,
+                style: const TextStyle(fontSize: 20),
+              )
             ],
           ),
         ));
