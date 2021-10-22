@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:todo/firestore.dart';
 import 'utils.dart';
@@ -222,6 +223,7 @@ class SecondRoute extends StatefulWidget {
 class _SecondRoute extends State<SecondRoute> {
   static const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
   TextEditingController textController = TextEditingController();
+  TextEditingController textControllerNumber = TextEditingController(text: '1');
   String displayText = "";
   DateTime currentDate = DateTime.now();
 
@@ -251,7 +253,9 @@ class _SecondRoute extends State<SecondRoute> {
               TextFormField(
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
-                  labelText: 'Enter your username',
+                  labelText: 'Event Name',
+                  hintText: 'Enter the name of the event',
+                  icon: Icon(Icons.event),
                 ),
                 controller: textController,
               ),
@@ -259,18 +263,29 @@ class _SecondRoute extends State<SecondRoute> {
                 onPressed: () => _selectDate(context),
                 child: const Text('Select date'),
               ),
-              AddUser("fullName", DateTime.now(), 42),
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      displayText = textController.text;
-                    });
-                  },
-                  child: const Text("Show Text")),
-              Text(
-                displayText,
-                style: const TextStyle(fontSize: 20),
-              )
+              TextFormField(
+                  controller: textControllerNumber,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                  decoration: const InputDecoration(
+                      labelText: "Expected Hours",
+                      hintText: "Hours",
+                      icon: Icon(Icons.timer))),
+              AddUser(textController.text, currentDate,
+                  int.parse(textControllerNumber.text)),
+              // ElevatedButton(
+              //     onPressed: () {
+              //       setState(() {
+              //         displayText = textController.text;
+              //       });
+              //     },
+              //     child: const Text("Show Text")),
+              // Text(
+              //   displayText,
+              //   style: const TextStyle(fontSize: 20),
+              // )
             ],
           ),
         ));
