@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -7,30 +8,48 @@ import 'utils.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  MyApp({Key? key}) : super(key: key);
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Test',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.green,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          return const Text("Something is wrong");
+        }
+
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MaterialApp(
+            title: 'Test',
+            theme: ThemeData(
+              // This is the theme of your application.
+              //
+              // Try running your application with "flutter run". You'll see the
+              // application has a blue toolbar. Then, without quitting the app, try
+              // changing the primarySwatch below to Colors.green and then invoke
+              // "hot reload" (press "r" in the console where you ran "flutter run",
+              // or simply save your changes to "hot reload" in a Flutter IDE).
+              // Notice that the counter didn't reset back to zero; the application
+              // is not restarted.
+              primarySwatch: Colors.green,
+            ),
+            home: const MyHomePage(title: 'Flutter Demo Home Page'),
+          );
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return const Text("Loading");
+      },
     );
   }
 }
@@ -58,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
-      final SignIn _signIn = SignIn();
+  final SignIn _signIn = SignIn();
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   DateTime? _rangeStart;
@@ -123,8 +142,6 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectedEvents.value = _getEventsForDay(end);
     }
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SecondRoute()),
+            MaterialPageRoute(builder: (context) => const SecondRoute(_signIn)),
           );
         },
         tooltip: 'Add Project',
@@ -214,8 +231,9 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class SecondRoute extends StatefulWidget {
-  const SecondRoute({Key? key}) : super(key: key);
-
+  
+  const SecondRoute({Key? key, SignIn, this.signIn}) : super(key: key);
+  final signIn;
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
@@ -225,17 +243,20 @@ class SecondRoute extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
   @override
-  State<SecondRoute> createState() => _SecondRoute();
+  State<SecondRoute> createState() => _SecondRoute(signIn);
 }
 
 class _SecondRoute extends State<SecondRoute> {
+  final signIn;
+
+  _SecondRoute({SignIn, this.signIn})
   // Controller for the input fields
   TextEditingController textController = TextEditingController();
   TextEditingController textControllerNumber = TextEditingController(text: '1');
   // Set the initial date
   String currentDate = DateTime.now().toString();
   // Init fireflutter
-  final AddProject _addProject = AddProject();
+  final AddProject _addProject = AddProject(signIn);
 
   @override
   Widget build(BuildContext context) {
@@ -287,7 +308,7 @@ class _SecondRoute extends State<SecondRoute> {
         onPressed: () {
           // Save project to firebase
           _addProject.addProject(textController.text, currentDate,
-              int.parse(textControllerNumber.text));
+              int.parse(textControllerNumber.text), auth.currentUser.uid);
           // Show snack bar
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
