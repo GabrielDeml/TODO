@@ -5,6 +5,7 @@ import 'package:todo/firestore.dart';
 import 'package:todo/sign_in.dart';
 import 'utils.dart';
 import 'package:date_time_picker/date_time_picker.dart';
+import 'sign_in_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
-      final SignIn _signIn = SignIn();
+  final SignIn _signIn = SignIn();
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   DateTime? _rangeStart;
@@ -123,8 +124,6 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectedEvents.value = _getEventsForDay(end);
     }
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +194,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           TextButton(
-              onPressed: _signIn.signInWithGoogle,
+              // Show the sign in screen
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const GoogleSigIn()));
+              },
               child: const Text("Sign in with google"))
         ],
       ),
